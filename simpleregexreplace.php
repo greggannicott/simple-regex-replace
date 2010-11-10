@@ -42,30 +42,30 @@ add_filter ( 'the_content', 'filter_simpleregexreplace');
  */
 function filter_simpleregexreplace($content) {
    
-   // Prepare patterns to search for
-   $patterns = array(
-       '/(incident) ([0-9]{1,6})/i'
-       , '/inc ([0-9]{1,6})/i'
-       , '/(issue) ([0-9]{1,6})/i'
-       , '/(problem) ([0-9]{1,6})/i'
-       , '/p([0-9]{1,6})/i'
-       , '/(change) ([0-9]{1,6})/i'
-       , '/(change request) ([0-9]{1,6})/i'
-   );
-
-   // Prepare replacements for when pattern is matched.
-   $replacements = array(
-       '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=cr+SKIPLIST=1+QBE.EQ.ref_num=$2">$1 $2</a>'         // incident xxxxxx
-       , '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=cr+SKIPLIST=1+QBE.EQ.ref_num=$1">incident $1</a>'       // inc xxxxxx
-       , '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=iss+SKIPLIST=1+QBE.EQ.ref_num=$2">$1 $2</a>'      // issue xxxxxx
-       , '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=cr+SKIPLIST=1+QBE.EQ.ref_num=$2">$1 $2</a>'       // problem xxxxxx
-       , '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=cr+SKIPLIST=1+QBE.EQ.ref_num=$1">problem $1</a>'  // pxxxx
-       , '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=chg+SKIPLIST=1+QBE.EQ.chg_ref_num=$2">$1 $2</a>'  // change xxxxxx
-       , '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=chg+SKIPLIST=1+QBE.EQ.chg_ref_num=$2">$1 $2</a>'  // change request xxxxxx
-   );
-
-   // Perform the replacement
-   $content = preg_replace($patterns, $replacements, $content);
+//   // Prepare patterns to search for
+//   $patterns = array(
+//       '/(incident) ([0-9]{1,6})/i' // incident xxxxxx
+//       , '/inc ([0-9]{1,6})/i' // inc xxxxxx
+//       , '/(issue) ([0-9]{1,6})/i' // issue xxxxxx
+//       , '/(problem) ([0-9]{1,6})/i' // problem xxxxxx
+//       , '/p([0-9]{1,6})/i' // pxxxx
+//       , '/(change) ([0-9]{1,6})/i' // change xxxxxx
+//       , '/(change request) ([0-9]{1,6})/i' // change request xxxxxx
+//   );
+//
+//   // Prepare replacements for when pattern is matched.
+//   $replacements = array(
+//       '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=cr+SKIPLIST=1+QBE.EQ.ref_num=$2">$1 $2</a>'         // incident xxxxxx
+//       , '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=cr+SKIPLIST=1+QBE.EQ.ref_num=$1">incident $1</a>'       // inc xxxxxx
+//       , '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=iss+SKIPLIST=1+QBE.EQ.ref_num=$2">$1 $2</a>'      // issue xxxxxx
+//       , '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=cr+SKIPLIST=1+QBE.EQ.ref_num=$2">$1 $2</a>'       // problem xxxxxx
+//       , '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=cr+SKIPLIST=1+QBE.EQ.ref_num=$1">problem $1</a>'  // pxxxx
+//       , '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=chg+SKIPLIST=1+QBE.EQ.chg_ref_num=$2">$1 $2</a>'  // change xxxxxx
+//       , '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=chg+SKIPLIST=1+QBE.EQ.chg_ref_num=$2">$1 $2</a>'  // change request xxxxxx
+//   );
+//
+//   // Perform the replacement
+//   $content = preg_replace($patterns, $replacements, $content);
 
    // Return the updated content
    return $content;
@@ -89,7 +89,9 @@ function simple_regex_replace_options_page() {
    // Handle any form action which has taken place (eg. an addition or edit)
 
    // ADD
-   if (isset($_POST['simple_regex_replace_action']) && $_POST['simple_regex_replace_action'] == 'add') {
+   if (isset($_POST['action']) && $_POST['action'] == 'add') {
+      
+      // Create a new entry to add to the original array
       $new = array();
       $new['id'] = time();
       $new['description'] = $_POST['simple_regex_replace_description'];
@@ -97,19 +99,48 @@ function simple_regex_replace_options_page() {
       $new['replace'] = $_POST['simple_regex_replace_replace'];
 
       // Add the new entry:
-      $simple_regex_replace_options['simple_regex_replace'][$new['id']] = $new;
+      $simple_regex_replace_options['entries'][$new['id']] = $new;
       update_option('simple_regex_replace_options',$simple_regex_replace_options);
-      echo "<div id=\"message\" class=\"updated fade\"><p>SimpleRegexReplace Options Updated</p></div>\n";
+
+      // Output the confirmation
+      echo "<div id=\"message\" class=\"updated fade\"><p>SimpleRegexReplace Options Updated - Entry Added</p></div>\n";
+
    }
 
    // EDIT
-   if (isset($_POST['simple_regex_replace_action']) && $_POST['simple_regex_replace_action'] == 'update') {
+   if (isset($_POST['action']) && $_POST['action'] == 'update') {
+
+      // Create a copy of the original entry
+      $updated = $simple_regex_replace_options['entries'][$_POST['id']];
+
+      // Update the values of the copy
+      $updated['id'] = $_POST['id'];
+      $updated['description'] = $_POST['simple_regex_replace_description'];
+      $updated['pattern'] = $_POST['simple_regex_replace_pattern'];
+      $updated['replace'] = $_POST['simple_regex_replace_replace'];
+
+      // Reintroduce the changes to the original array
+      $simple_regex_replace_options['entries'][$_POST['id']] = $updated;
+
+      // Apply the changes to the database
+      update_option('simple_regex_replace_options',$simple_regex_replace_options);
+
+      // Output confirmation
+      echo "<div id=\"message\" class=\"updated fade\"><p>SimpleRegexReplace Options Updated - Entry Updated</p></div>\n";
 
    }
 
    // DELETE
-   if (isset($_GET['simple_regex_replace_action']) && $_GET['simple_regex_replace_action'] == 'delete') {
+   if (isset($_GET['action']) && $_GET['action'] == 'delete') {
 
+      // Remove the entry from the array
+      unset($simple_regex_replace_options['entries'][$_GET['id']]);
+
+      // Apply the changes to the database
+      update_option('simple_regex_replace_options',$simple_regex_replace_options);
+
+      // Output comfirmation
+      echo "<div id=\"message\" class=\"updated fade\"><p>SimpleRegexReplace Options Updated - Entry Removed</p></div>\n";
    }
 
    echo '<div class="wrap">';
@@ -117,7 +148,15 @@ function simple_regex_replace_options_page() {
       // Title (wp standard is 'h2')
       echo '<h2>SimpleRegexReplace Options</h2>';
 
-      echo '<h3>Add New Entry</h3>';
+      // Set Heading (either add or update)
+      if (isset($_GET['action']) && $_GET['action'] == 'update') {
+         echo '<h3>Update Entry</h3>';
+      } else {
+         echo '<h3>Add New Entry</h3>';
+      }
+
+      // Grab the values for the item we're updating
+      $current = $simple_regex_replace_options['entries'][$_GET['id']];
 
       // Start the form
       echo '<form name="simple_regex_replace_options" method="post">';
@@ -131,33 +170,39 @@ function simple_regex_replace_options_page() {
             // Description
             print '<tr valign="top">';
             print '<th scope="row">Description</th>';
-            print '<td><input size="50" type="text" name="simple_regex_replace_description" value="'.get_option('simple_regex_replace_description').'" /></td>';
+            print '<td><input size="50" type="text" name="simple_regex_replace_description" value="'.$current['description'].'" /></td>';
             print '</tr>';
 
             // Pattern to Match
             print '<tr valign="top">';
             print '<th scope="row">Pattern to Match</th>';
-            print '<td><input size="50" type="text" name="simple_regex_replace_pattern" value="'.get_option('simple_regex_replace_pattern').'" /></td>';
+            print '<td><input size="50" type="text" name="simple_regex_replace_pattern" value="'.$current['pattern'].'" /></td>';
             print '</tr>';
 
             // Replace With
             print '<tr valign="top">';
             print '<th scope="row">Replace With</th>';
-            print '<td><input size="50" type="text" name="simple_regex_replace_replace" value="'.get_option('simple_regex_replace_replace').'" /></td>';
+            print '<td><input size="50" type="text" name="simple_regex_replace_replace" value="'.$current['replace'].'" /></td>';
             print '</tr>';
 
          print '</table>';
 
-         // Required:
-         print '<input type="hidden" name="simple_regex_replace_action" value="add" />';
-
          // Contains a list of all the options that should be saved to the db (comma seperated)
-         print '<input type="hidden" name="page_options" value="simple_regex_replace_description, simple_regex_replace_pattern, simple_regex_replace_replace   " />';
+//         print '<input type="hidden" name="page_options" value="simple_regex_replace_description, simple_regex_replace_pattern, simple_regex_replace_replace   " />';
 
+         // Determine whether this form is updating or adding. Name submit button and set
+         // hidden field appropriately
          print '<p class="submit">';
-         print '<input type="submit" class="button-primary" value="Add" />'; // the e_() handles localization
-         print '</p>'
-         ;
+         if (isset($_GET['action']) && $_GET['action'] == 'update') {
+            print '<input type="submit" class="button-primary" value="Update" />';
+            print '<input type="hidden" name="action" value="update" />';
+            print '<input type="hidden" name="id" value="'.$current['id'].'" />';
+         } else {
+            print '<input type="submit" class="button-primary" value="Add" />';
+            print '<input type="hidden" name="action" value="add" />';
+         }
+         print '</p>';
+
       print '</form>';
 
       // List existing entries:
@@ -165,24 +210,38 @@ function simple_regex_replace_options_page() {
       echo '<h3>Existing Entries</h3>';
 
       // Create the HTML to display all entries
-      $allHTML = "";
-      foreach($searchReplace_options['simple_regex_replace'] as $entry) {
-         $html = "<tr><td>".$entry['description']."</td>";
-         $html = "<tr><td>".$entry['pattern']."</td>";
-         $html = "<tr><td>".$entry['replace']."</td>";
-         $html = "<tr><td>Options</td>";
-      }
+      $rows_html = "";
+      $alt = true;
+      if (count($simple_regex_replace_options['entries']) > 0) {
+         foreach($simple_regex_replace_options['entries'] as $entry) {
 
-      $allHTML = $html;
+            // Alternate the row colours:
+            if ($alt) {
+               $class="class='alternate'";
+               $alt = false;
+            } else {
+               $class="class=''";
+               $alt = true;
+            }
+
+            // Generate the HTML for each row:
+            $rows_html .= "<tr ".$class."><td>".$entry['description']."</td>";
+            $rows_html .= "<td>".$entry['pattern']."</td>";
+            $rows_html .= "<td>".htmlentities($entry['replace'])."</td>";
+            $rows_html .= '<td><a href="'.get_bloginfo( "wpurl").'/wp-admin/options-general.php?page='.array_pop(explode("/",__FILE__)).'&action=update&id='.$entry['id'].'">Edit</a> | <a href="'.get_bloginfo( "wpurl").'/wp-admin/options-general.php?page='.array_pop(explode("/",__FILE__)).'&action=delete&id='.$entry['id'].'">delete</a></td></tr>';
+         }
+      } else {
+         $rows_html = '<tr><td rowspan=4>No Entries</td></tr>';
+      }
 
       print '<table class="widefat" width="100%" cellpadding="5px">
          <tr>
-            <th width="50%">Description</th>
-            <th width="20%%">Pattern</th>
-            <th width="20%">Replace</th>
+            <th width="30%">Description</th>
+            <th width="30%">Pattern</th>
+            <th width="30%">Replace</th>
             <th width="10%">Options</th>
          </tr>
-         ' .$allHTML. '
+         ' .$rows_html. '
       </table>';
 
       // BLAh
