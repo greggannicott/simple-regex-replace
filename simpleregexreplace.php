@@ -29,9 +29,6 @@ License: GPL2
 // Include the config file
 require_once("wp-config.php");
 
-?>
-<?php
-
 // register the filter
 add_filter ( 'the_content', 'filter_simpleregexreplace');
 
@@ -64,8 +61,27 @@ function filter_simpleregexreplace($content) {
 //       , '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=chg+SKIPLIST=1+QBE.EQ.chg_ref_num=$2">$1 $2</a>'  // change request xxxxxx
 //   );
 //
-//   // Perform the replacement
-//   $content = preg_replace($patterns, $replacements, $content);
+
+   // Declare some variables
+   $patterns = array();
+   $replacements = array();
+
+   // Read in the patterns and replacements from the database
+   $simple_regex_replace_options = get_option('simple_regex_replace_options');
+
+   // Check that we have entries.
+   if (count($simple_regex_replace_options['entries']) > 0) {
+
+      // Loop through the entries
+      foreach ($simple_regex_replace_options['entries'] as $entry) {
+         array_push($patterns,'/'.$entry['pattern'].'/i');  // i = case insensetive
+         array_push($replacements,$entry['replace']);
+      }
+
+      // Perform the replacement
+      $content = preg_replace($patterns, $replacements, $content);
+
+   }
 
    // Return the updated content
    return $content;
@@ -169,26 +185,23 @@ function simple_regex_replace_options_page() {
 
             // Description
             print '<tr valign="top">';
-            print '<th scope="row">Description</th>';
+            print '<th scope="row">Description:</th>';
             print '<td><input size="50" type="text" name="simple_regex_replace_description" value="'.$current['description'].'" /></td>';
             print '</tr>';
 
             // Pattern to Match
             print '<tr valign="top">';
-            print '<th scope="row">Pattern to Match</th>';
+            print '<th scope="row">Pattern to match:</th>';
             print '<td><input size="50" type="text" name="simple_regex_replace_pattern" value="'.$current['pattern'].'" /></td>';
             print '</tr>';
 
             // Replace With
             print '<tr valign="top">';
-            print '<th scope="row">Replace With</th>';
+            print '<th scope="row">Replace with:</th>';
             print '<td><input size="50" type="text" name="simple_regex_replace_replace" value="'.$current['replace'].'" /></td>';
             print '</tr>';
 
          print '</table>';
-
-         // Contains a list of all the options that should be saved to the db (comma seperated)
-//         print '<input type="hidden" name="page_options" value="simple_regex_replace_description, simple_regex_replace_pattern, simple_regex_replace_replace   " />';
 
          // Determine whether this form is updating or adding. Name submit button and set
          // hidden field appropriately
@@ -234,17 +247,17 @@ function simple_regex_replace_options_page() {
          $rows_html = '<tr><td rowspan=4>No Entries</td></tr>';
       }
 
+      print '<fieldset class="options">';
       print '<table class="widefat" width="100%" cellpadding="5px">
          <tr>
             <th width="30%">Description</th>
-            <th width="30%">Pattern</th>
-            <th width="30%">Replace</th>
+            <th width="30%">Pattern to Match</th>
+            <th width="30%">Replace With</th>
             <th width="10%">Options</th>
          </tr>
          ' .$rows_html. '
       </table>';
-
-      // BLAh
+      print '</fieldset>';
 
    print '</div>';
 
