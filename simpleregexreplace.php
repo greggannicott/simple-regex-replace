@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: SimpleRegexReplace
-Plugin URI: http://greg.gannicott.co.uk
+Plugin URI: http://simpleregexreplace.gannicott.co.uk
 Description: Replaces content of posts based on regex set by the user.
 Version: 0.1
 Author: Greg Gannicott
@@ -25,7 +25,6 @@ License: GPL2
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-
 // Include the config file
 require_once("wp-config.php");
 
@@ -34,34 +33,11 @@ add_filter ( 'the_content', 'filter_simpleregexreplace');
 
 /**
  * Replaces output based on the patterns and replacements provided by the user.
- * @param <type> $content
- * @return <type>
+ * @param string $content The post prior to filter being applied
+ * @return string The post after the filter being applied
  */
 function filter_simpleregexreplace($content) {
    
-//   // Prepare patterns to search for
-//   $patterns = array(
-//       '/(incident) ([0-9]{1,6})/i' // incident xxxxxx
-//       , '/inc ([0-9]{1,6})/i' // inc xxxxxx
-//       , '/(issue) ([0-9]{1,6})/i' // issue xxxxxx
-//       , '/(problem) ([0-9]{1,6})/i' // problem xxxxxx
-//       , '/p([0-9]{1,6})/i' // pxxxx
-//       , '/(change) ([0-9]{1,6})/i' // change xxxxxx
-//       , '/(change request) ([0-9]{1,6})/i' // change request xxxxxx
-//   );
-//
-//   // Prepare replacements for when pattern is matched.
-//   $replacements = array(
-//       '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=cr+SKIPLIST=1+QBE.EQ.ref_num=$2">$1 $2</a>'         // incident xxxxxx
-//       , '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=cr+SKIPLIST=1+QBE.EQ.ref_num=$1">incident $1</a>'       // inc xxxxxx
-//       , '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=iss+SKIPLIST=1+QBE.EQ.ref_num=$2">$1 $2</a>'      // issue xxxxxx
-//       , '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=cr+SKIPLIST=1+QBE.EQ.ref_num=$2">$1 $2</a>'       // problem xxxxxx
-//       , '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=cr+SKIPLIST=1+QBE.EQ.ref_num=$1">problem $1</a>'  // pxxxx
-//       , '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=chg+SKIPLIST=1+QBE.EQ.chg_ref_num=$2">$1 $2</a>'  // change xxxxxx
-//       , '<a href="http://bdhw3kf4/CAisd/pdmweb.exe?OP=SEARCH+FACTORY=chg+SKIPLIST=1+QBE.EQ.chg_ref_num=$2">$1 $2</a>'  // change request xxxxxx
-//   );
-//
-
    // Declare some variables
    $patterns = array();
    $replacements = array();
@@ -91,12 +67,16 @@ function filter_simpleregexreplace($content) {
 
 add_action('admin_menu', 'simple_regex_replace_menu');
 
+/**
+ * Add a link to the admin page to the WordPress menu
+ */
 function simple_regex_replace_menu() {
-
   add_options_page('Simple Regex Replace Options', 'Simple Regex Replace', 'manage_options', basename(__FILE__), 'simple_regex_replace_options_page');
-
 }
 
+/**
+ * Handles page which enables uses to add/edit/delete entries.
+ */
 function simple_regex_replace_options_page() {
 
    // Declare vars
