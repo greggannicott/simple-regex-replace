@@ -99,6 +99,9 @@ function simple_regex_replace_menu() {
 
 function simple_regex_replace_options_page() {
 
+   // Declare vars
+   $current = array();
+   
    // Read in the list of existing regexs
    $simple_regex_replace_options = get_option('simple_regex_replace_options');
 
@@ -164,15 +167,20 @@ function simple_regex_replace_options_page() {
       // Title (wp standard is 'h2')
       echo '<h2>SimpleRegexReplace Options</h2>';
 
-      // Set Heading (either add or update)
-      if (isset($_GET['action']) && $_GET['action'] == 'update') {
+      // Set Heading (either add or update). If an update has just been performed
+      // we want to display add instead.
+      if (isset($_GET['action']) && $_GET['action'] == 'update' && $_POST['id'] == '') {
          echo '<h3>Update Entry</h3>';
       } else {
          echo '<h3>Add New Entry</h3>';
       }
 
       // Grab the values for the item we're updating
-      $current = $simple_regex_replace_options['entries'][$_GET['id']];
+      // We only want to do this if we are performing an update. NOT if we've
+      // just submitted one or not dealing with an update.
+      if (isset($_GET['action']) && $_GET['action'] == 'update' && $_POST['id'] == '') {
+         $current = $simple_regex_replace_options['entries'][$_GET['id']];
+      }
 
       // Start the form
       echo '<form name="simple_regex_replace_options" method="post">';
@@ -204,9 +212,10 @@ function simple_regex_replace_options_page() {
          print '</table>';
 
          // Determine whether this form is updating or adding. Name submit button and set
-         // hidden field appropriately
+         // hidden field appropriately. We only display it as updating if an
+         // update is about to happen. If it's happened, we revert back to test.
          print '<p class="submit">';
-         if (isset($_GET['action']) && $_GET['action'] == 'update') {
+         if (isset($_GET['action']) && $_GET['action'] == 'update' && $_POST['id'] == '') {
             print '<input type="submit" class="button-primary" value="Update" />';
             print '<input type="hidden" name="action" value="update" />';
             print '<input type="hidden" name="id" value="'.$current['id'].'" />';
