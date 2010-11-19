@@ -75,7 +75,7 @@ function filter_simpleregexreplace($content) {
       // Loop through the entries
       foreach ($simple_regex_replace_options['entries'] as $entry) {
          array_push($patterns,'/'.$entry['pattern'].'/i');  // i = case insensetive
-         array_push($replacements,$entry['replace']);
+         array_push($replacements, stripcslashes($entry['replace']));
       }
 
       // Perform the replacement
