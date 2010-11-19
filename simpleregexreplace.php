@@ -239,8 +239,8 @@ function simple_regex_replace_options_page() {
 
             // Generate the HTML for each row:
             $rows_html .= "<tr ".$class."><td>".$entry['description']."</td>";
-            $rows_html .= "<td>".$entry['pattern']."</td>";
-            $rows_html .= "<td>".htmlentities($entry['replace'])."</td>";
+            $rows_html .= "<td>".stripslashes($entry['pattern'])."</td>";
+            $rows_html .= "<td>".htmlentities(stripslashes($entry['replace']))."</td>";
             $rows_html .= '<td><a href="'.get_bloginfo( "wpurl").'/wp-admin/options-general.php?page='.array_pop(explode("/",__FILE__)).'&action=update&id='.$entry['id'].'">Edit</a> | <a href="'.get_bloginfo( "wpurl").'/wp-admin/options-general.php?page='.array_pop(explode("/",__FILE__)).'&action=delete&id='.$entry['id'].'">delete</a></td></tr>';
          }
       } else {
