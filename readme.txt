@@ -60,6 +60,8 @@ Learning & Reference:
 
 Tools:
 
+* Regex Buddy
+
 == Screenshots ==
 
 1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
